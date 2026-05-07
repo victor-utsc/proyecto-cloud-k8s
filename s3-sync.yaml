@@ -20,9 +20,9 @@ spec:
         env:
         # Aquí van tus credenciales de IAM en AWS
         - name: AWS_ACCESS_KEY_ID
-          value: "AKIA2EJO5NS7FKSMW5OV"
+          value: "AKIAIOSFODNN7EXAMPLE"
         - name: AWS_SECRET_ACCESS_KEY
-          value: "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"
+          value: "AKIAIOSFODNN7EXAMPLE"
         - name: AWS_DEFAULT_REGION
           value: "us-east-2" # Cambia esto si tu bucket está en otra región
 =======

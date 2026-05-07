@@ -6,8 +6,8 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # --- CONFIGURACIÓN ---
-AWS_ACCESS_KEY = 'AKIA2EJO5NS7FKSMW5OV'
-AWS_SECRET_KEY = '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'
+AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE'
+AWS_SECRET_KEY = 'AKIAIOSFODNN7EXAMPLE'
 BUCKET_NAME = 'sync-archivos-victor'
 CARPETA_A_VIGILAR = './mi_nube' 
 
