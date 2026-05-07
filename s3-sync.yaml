@@ -1,0 +1,55 @@
+<<<<<<< HEAD
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3-sync-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: s3-sync
+  template:
+    metadata:
+      labels:
+        app: s3-sync
+    spec:
+      containers:
+      - name: sync-container
+        image: v1ctor2121/s3-sync:v1
+        imagePullPolicy: Always
+        env:
+        # Aquí van tus credenciales de IAM en AWS
+        - name: AWS_ACCESS_KEY_ID
+          value: "AKIA2EJO5NS7FKSMW5OV"
+        - name: AWS_SECRET_ACCESS_KEY
+          value: "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"
+        - name: AWS_DEFAULT_REGION
+          value: "us-east-2" # Cambia esto si tu bucket está en otra región
+=======
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3-sync-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: s3-sync
+  template:
+    metadata:
+      labels:
+        app: s3-sync
+    spec:
+      containers:
+      - name: sync-container
+        image: v1ctor2121/s3-sync:v1
+        imagePullPolicy: Always
+        env:
+        # Aquí van tus credenciales de IAM en AWS
+        - name: AWS_ACCESS_KEY_ID
+          value: "VALOR_PROTEGIDO"
+        - name: AWS_SECRET_ACCESS_KEY
+          value: "VALOR_PROTEGIDO"
+        - name: AWS_DEFAULT_REGION
+          value: "us-east-2" # Cambia esto si tu bucket está en otra región
+>>>>>>> 5314991166669423c3559bd5572fce4471e2c23f

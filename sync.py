@@ -1,0 +1,115 @@
+<<<<<<< HEAD
+import os
+import time
+import boto3
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+# --- CONFIGURACIÓN ---
+AWS_ACCESS_KEY = 'AKIA2EJO5NS7FKSMW5OV'
+AWS_SECRET_KEY = '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'
+BUCKET_NAME = 'sync-archivos-victor'
+CARPETA_A_VIGILAR = './mi_nube' 
+
+# Conexión a AWS
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS_SECRET_KEY
+)
+
+class SincronizadorS3(FileSystemEventHandler):
+    def on_created(self, event):
+        self.subir_archivo(event)
+
+    def on_modified(self, event):
+        self.subir_archivo(event)
+
+    def subir_archivo(self, event):
+        if event.is_directory:
+            return
+        
+        ruta_local = event.src_path
+        nombre_archivo = os.path.basename(ruta_local)
+        
+        try:
+            print(f"Subiendo {nombre_archivo} a AWS...")
+            s3_client.upload_file(ruta_local, BUCKET_NAME, nombre_archivo)
+            print(f"¡Éxito! '{nombre_archivo}' está en la nube.")
+        except Exception as e:
+            print(f"Error: {e}")
+
+if __name__ == "__main__":
+    if not os.path.exists(CARPETA_A_VIGILAR):
+        os.makedirs(CARPETA_A_VIGILAR)
+
+    event_handler = SincronizadorS3()
+    observer = Observer()
+    observer.schedule(event_handler, CARPETA_A_VIGILAR, recursive=False)
+    observer.start()
+
+    print(f"Vigilando carpeta: {os.path.abspath(CARPETA_A_VIGILAR)}")
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
+=======
+import os
+import time
+import boto3
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+# --- CONFIGURACIÓN ---
+AWS_ACCESS_KEY = 'TU_ACCESS_KEY'
+AWS_SECRET_KEY = 'TU_SECRET_KEY'
+BUCKET_NAME = 'sync-archivos-victor'
+CARPETA_A_VIGILAR = './mi_nube' 
+
+# Conexión a AWS
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS_SECRET_KEY
+)
+
+class SincronizadorS3(FileSystemEventHandler):
+    def on_created(self, event):
+        self.subir_archivo(event)
+
+    def on_modified(self, event):
+        self.subir_archivo(event)
+
+    def subir_archivo(self, event):
+        if event.is_directory:
+            return
+        
+        ruta_local = event.src_path
+        nombre_archivo = os.path.basename(ruta_local)
+        
+        try:
+            print(f"Subiendo {nombre_archivo} a AWS...")
+            s3_client.upload_file(ruta_local, BUCKET_NAME, nombre_archivo)
+            print(f"¡Éxito! '{nombre_archivo}' está en la nube.")
+        except Exception as e:
+            print(f"Error: {e}")
+
+if __name__ == "__main__":
+    if not os.path.exists(CARPETA_A_VIGILAR):
+        os.makedirs(CARPETA_A_VIGILAR)
+
+    event_handler = SincronizadorS3()
+    observer = Observer()
+    observer.schedule(event_handler, CARPETA_A_VIGILAR, recursive=False)
+    observer.start()
+
+    print(f"Vigilando carpeta: {os.path.abspath(CARPETA_A_VIGILAR)}")
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
+>>>>>>> 5314991166669423c3559bd5572fce4471e2c23f
