@@ -5,10 +5,11 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # --- CONFIGURACIÓN ---
-AWS_ACCESS_KEY = 'TU_ACCESS_KEY'
-AWS_SECRET_KEY = 'TU_SECRET_KEY'
+AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+region_name=('us-east-2')
 BUCKET_NAME = 'sync-archivos-victor'
-CARPETA_A_VIGILAR = './mi_nube' 
+CARPETA_A_VIGILAR = '/app/mi_nube'
 
 # Conexión a AWS
 s3_client = boto3.client(

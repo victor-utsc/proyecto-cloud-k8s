@@ -17,14 +17,6 @@ spec:
         image: v1ctor2121/s3-sync:latest
         imagePullPolicy: Always
         env:
-        volumeMounts:
-    - name: volumen-windows
-      mountPath: /app/mi_nube
-  volumes:
-  - name: volumen-windows
-    hostPath:
-      path: /mnt/mi_nube_windows  # <-- La ruta que acabamos de conectar
-      type: Directory
         # Aquí van tus credenciales de IAM en AWS
         - name: PYTHONUNBUFFERED      # <--- Obliga a mostrar logs
           value: "1"
@@ -40,3 +32,11 @@ spec:
               key: AWS_SECRET_ACCESS_KEY
         - name: AWS_DEFAULT_REGION
           value: "us-east-2"
+        volumeMounts:
+        - name: volumen-windows
+          mountPath: /app/mi_nube
+      volumes:
+      - name: volumen-windows
+        hostPath:
+          path: /mnt/mi_nube_windows
+          type: Directory
