@@ -8,14 +8,14 @@ from watchdog.events import FileSystemEventHandler
 AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 BUCKET_NAME = 'sync-archivos-victor'
-CARPETA_A_VIGILAR = '/app/mi_nube'  # Ruta absoluta que coincide con el YAML
+CARPETA_A_VIGILAR = '/app/mi_nube'  
 
 # --- CLIENTE S3 ---
 s3_client = boto3.client(
     's3',
     aws_access_key_id=AWS_ACCESS_KEY,
     aws_secret_access_key=AWS_SECRET_KEY,
-    region_name='us-east-2'  # Previene bloqueos de conexión
+    region_name='us-east-2' 
 )
 
 # --- LÓGICA DE DETECCIÓN Y SUBIDA ---
@@ -23,7 +23,6 @@ class SincronizadorS3(FileSystemEventHandler):
     def procesar_archivo(self, ruta_local):
         nombre_archivo = os.path.basename(ruta_local)
         
-        # Escudo: Ignorar archivos temporales u ocultos que crea la red de Windows
         if nombre_archivo.startswith('.'):
             return
             
@@ -44,28 +43,34 @@ class SincronizadorS3(FileSystemEventHandler):
             print(f"--- EVENTO: Archivo Modificado -> {event.src_path} ---")
             self.procesar_archivo(event.src_path)
 
-    def on_moved(self, event):
+    # --- NUEVA FUNCIÓN DE LIMPIEZA ---
+    def on_deleted(self, event):
         if not event.is_directory:
-            ruta_vieja = event.src_path
-            ruta_nueva = event.dest_path
-            nombre_viejo = os.path.basename(ruta_vieja)
-            nombre_nuevo = os.path.basename(ruta_nueva)
+            nombre_borrado = os.path.basename(event.src_path)
             
-            # Evitar archivos temporales de Windows durante el renombrado
-            if nombre_nuevo.startswith('.'):
+            if nombre_borrado.startswith('.'):
                 return
 
-            print(f"--- EVENTO: Archivo Renombrado -> de '{nombre_viejo}' a '{nombre_nuevo}' ---")
+            print(f"--- EVENTO: Archivo Eliminado/Renombrado (Viejo) -> {nombre_borrado} ---")
             
-            # 1. Subir el archivo con el nuevo nombre
+            try:
+                s3_client.delete_object(Bucket=BUCKET_NAME, Key=nombre_borrado)
+                print(f"Limpieza: '{nombre_borrado}' fue eliminado de AWS S3.")
+            except Exception as e:
+                print(f"Error borrando en S3: {e}")
+
+    # Mantenemos on_moved por si el sistema operativo logra enviarlo
+    def on_moved(self, event):
+        if not event.is_directory:
+            ruta_nueva = event.dest_path
+            nombre_viejo = os.path.basename(event.src_path)
+            
+            print(f"--- EVENTO: Movimiento Directo Detectado ---")
             self.procesar_archivo(ruta_nueva)
-            
-            # 2. Eliminar el archivo viejo del bucket en AWS S3
             try:
                 s3_client.delete_object(Bucket=BUCKET_NAME, Key=nombre_viejo)
-                print(f"Limpieza: Archivo viejo '{nombre_viejo}' eliminado de AWS S3.")
-            except Exception as e:
-                print(f"Error limpiando el archivo viejo '{nombre_viejo}' en S3: {e}")
+            except Exception:
+                pass
 
 # --- INICIO DEL BUCLE ---
 if __name__ == "__main__":
