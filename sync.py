@@ -1,7 +1,7 @@
 import os
 import time
 import boto3
-from watchdog.observers import Observer
+from watchdog.observers.polling import PollingObserver as Observer
 from watchdog.events import FileSystemEventHandler
 
 # --- CONFIGURACIÓN SEGURA ---
