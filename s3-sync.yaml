@@ -14,13 +14,29 @@ spec:
     spec:
       containers:
       - name: sync-container
-        image: v1ctor2121/s3-sync:v1
+        image: v1ctor2121/s3-sync:latest
         imagePullPolicy: Always
         env:
+        volumeMounts:
+    - name: volumen-windows
+      mountPath: /app/mi_nube
+  volumes:
+  - name: volumen-windows
+    hostPath:
+      path: /mnt/mi_nube_windows  # <-- La ruta que acabamos de conectar
+      type: Directory
         # Aquí van tus credenciales de IAM en AWS
+        - name: PYTHONUNBUFFERED      # <--- Obliga a mostrar logs
+          value: "1"
         - name: AWS_ACCESS_KEY_ID
-          value: "VALOR_PROTEGIDO"
+          valueFrom:
+            secretKeyRef:
+              name: credenciales-aws
+              key: AWS_ACCESS_KEY_ID
         - name: AWS_SECRET_ACCESS_KEY
-          value: "VALOR_PROTEGIDO"
+          valueFrom:
+            secretKeyRef:
+              name: credenciales-aws
+              key: AWS_SECRET_ACCESS_KEY
         - name: AWS_DEFAULT_REGION
-          value: "us-east-2" # Cambia esto si tu bucket está en otra región
+          value: "us-east-2"
